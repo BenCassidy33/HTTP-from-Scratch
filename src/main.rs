@@ -1,7 +1,8 @@
 use codes::HttpClientError;
 use headers::{HttpRequestHeader, HttpResponseHeader, HttpVersion};
-use paths::{HttpFunctionReturnType, HttpPath, HttpPathMethods};
-use std::{collections::HashMap, fmt::format, str};
+use paths::{into_http, HttpFunctionReturnType, HttpPathMethods};
+use routes::*;
+use std::{any::Any, collections::HashMap, str};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
@@ -11,22 +12,19 @@ pub mod codes;
 pub mod content;
 pub mod headers;
 pub mod paths;
+pub mod routes;
 
 static HTTP_CONNECTION_FAILED: HttpResponseHeader = HttpResponseHeader {
     status: codes::HttpStatus::Calamitous(HttpClientError::BadRequest),
     http_version: HttpVersion::HTTP11,
-    method: headers::HttpMethod::GET,
 };
-
-async fn index() -> HttpFunctionReturnType {
-    todo!()
-}
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     let listener = TcpListener::bind("127.0.0.1:8080").await?;
 
-    let paths = <std::vec::Vec<paths::HttpPath> as HttpPathMethods>::new().get("/", &index);
+    let paths = <std::vec::Vec<paths::HttpPath> as HttpPathMethods>::new()
+        .get("/", into_http(routes::index));
 
     loop {
         let (socket, _) = listener.accept().await?;

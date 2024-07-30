@@ -1,7 +1,7 @@
 use super::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum HttpMethod {
     GET,
     HEAD,
@@ -45,8 +45,6 @@ pub struct HttpRequestHeader {
 pub struct HttpResponseHeader {
     #[serde(flatten)]
     pub status: codes::HttpStatus,
-    #[serde(flatten)]
-    pub method: headers::HttpMethod,
     #[serde(rename = "version")]
     pub http_version: headers::HttpVersion,
 }
