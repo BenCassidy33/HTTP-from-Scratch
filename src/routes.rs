@@ -1,6 +1,6 @@
 use crate::{
     codes::{HttpOk, HttpStatus},
-    headers::{HttpMethod, HttpResponseHeader, HttpVersion},
+    headers::{HttpResponseHeader, HttpVersion},
 };
 
 pub async fn index(_: crate::headers::HttpRequestHeader) -> crate::paths::HttpFunctionReturnType {

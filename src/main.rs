@@ -1,8 +1,7 @@
 use codes::HttpClientError;
-use headers::{HttpRequestHeader, HttpResponseHeader, HttpVersion};
-use paths::{into_http, HttpFunctionReturnType, HttpPathMethods};
-use routes::*;
-use std::{any::Any, collections::HashMap, str};
+use headers::{HttpResponseHeader, HttpVersion};
+use paths::{into_http, HttpPathMethods};
+use std::{collections::HashMap, str};
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
