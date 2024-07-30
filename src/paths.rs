@@ -16,7 +16,8 @@ pub enum HttpFunctionCallError {
 
 pub type HttpFunction = Arc<
     dyn Fn(HttpRequestHeader) -> Pin<Box<dyn Future<Output = HttpFunctionReturnType> + Send>>
-        + Send,
+        + Send
+        + Sync,
 >;
 pub type HttpFunctionReturnType = Result<(HttpResponseHeader, Vec<u8>), HttpError>;
 
@@ -66,7 +67,7 @@ impl HttpPathMethods for Vec<HttpPath> {
 
 pub fn into_http<F, Fut>(f: F) -> HttpFunction
 where
-    F: Fn(HttpRequestHeader) -> Fut + Send + 'static,
+    F: Fn(HttpRequestHeader) -> Fut + Send + Sync + 'static,
     Fut: Future<Output = HttpFunctionReturnType> + Send + 'static,
 {
     Arc::new(move |req| Box::pin(f(req)))

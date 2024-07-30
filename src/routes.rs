@@ -13,3 +13,7 @@ pub async fn index(_: crate::headers::HttpRequestHeader) -> crate::paths::HttpFu
 
     return Ok((response_header, html.as_bytes().into()));
 }
+
+pub async fn post(_: crate::headers::HttpRequestHeader) -> crate::paths::HttpFunctionReturnType {
+    todo!()
+}

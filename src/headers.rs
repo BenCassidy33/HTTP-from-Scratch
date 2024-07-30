@@ -1,8 +1,9 @@
 use super::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub enum HttpMethod {
+    #[default]
     GET,
     HEAD,
     POST,
@@ -13,9 +14,10 @@ pub enum HttpMethod {
     TRACE,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub enum HttpVersion {
     #[serde(rename = "HTTP/1.1")]
+    #[default]
     HTTP11,
     #[serde(rename = "HTTP/2")]
     HTTP2,
@@ -23,13 +25,22 @@ pub enum HttpVersion {
     //HTTP3,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
+pub struct HttpResponseHeader {
+    #[serde(flatten)]
+    pub status: codes::HttpStatus,
+    #[serde(rename = "version")]
+    pub http_version: headers::HttpVersion,
+}
+
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub struct HttpRequestHeader {
     pub authority: String,
     pub method: headers::HttpMethod,
     pub path: String,
     pub scheme: String,
-    pub accept: content::ContentTypes,
+    pub accept: Vec<content::ContentTypes>,
+    pub accept_encoding: Vec<content::AcceptEncoding>,
     #[serde(flatten)]
     pub http_version: headers::HttpVersion,
     #[serde(rename = "Request Headers")]
@@ -39,12 +50,5 @@ pub struct HttpRequestHeader {
     #[serde(rename = "user-agent")]
     pub user_agent: String,
     pub body: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct HttpResponseHeader {
-    #[serde(flatten)]
-    pub status: codes::HttpStatus,
-    #[serde(rename = "version")]
-    pub http_version: headers::HttpVersion,
+    pub priority: String,
 }

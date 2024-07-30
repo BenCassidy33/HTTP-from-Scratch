@@ -3,11 +3,28 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
+pub enum AcceptEncoding {
+    Gzip,
+    Deflate,
+    Br,
+    Zstd,
+    Identity,
+    Any,
+    Qvalues,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub enum ContentTypes {
     Application(Application),
     Audio(Audio),
     Image(Image),
     Text(Text),
+}
+
+impl Default for ContentTypes {
+    fn default() -> Self {
+        ContentTypes::Text(Text::default())
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -42,9 +59,10 @@ pub enum Image {
     Png,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Default)]
 pub enum Text {
     #[serde(rename = "text/plain")]
+    #[default]
     Plain,
     #[serde(rename = "text/css")]
     Css,
