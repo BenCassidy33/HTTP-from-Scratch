@@ -1,6 +1,7 @@
 use super::*;
+use std::any::Any;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub enum HttpMethod {
     #[default]
     GET,
@@ -24,18 +25,26 @@ pub enum HttpVersion {
 
 #[derive(Debug)]
 pub struct HttpResponseHeader {
+    pub http_method: headers::HttpMethod,
     pub status: codes::HttpStatus,
-    pub http_version: headers::HttpVersion,
+    pub content_type: content::ContentType,
+    pub content_length: usize,
+    pub http_version: HttpVersion,
 }
 
-#[derive(Debug, Default)]
+pub struct HttpResponse {
+    header: HttpResponseHeader,
+    body: String,
+}
+
+#[derive(Debug, Default, Clone)]
 pub struct HttpRequestHeader {
     pub authority: String,
     pub method: headers::HttpMethod,
     pub host: String,
     pub path: String,
     pub scheme: String,
-    pub accept: Vec<content::ContentTypes>,
+    pub accept: Vec<content::ContentType>,
     pub accept_encoding: Vec<content::AcceptEncoding>,
     pub http_version: headers::HttpVersion,
     pub request_headers: String, // TODO

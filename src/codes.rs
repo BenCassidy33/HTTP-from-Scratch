@@ -1,6 +1,6 @@
 // codes found here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#information_responses
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum HttpStatus {
     Ok(HttpOk),
     Redirect(HttpRedirect),
@@ -8,7 +8,7 @@ pub enum HttpStatus {
     Calamitous(HttpClientError),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum HttpOk {
     Ok = 200,
     Created = 201,
@@ -22,23 +22,24 @@ pub enum HttpOk {
     ImUsed = 226,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum HttpRedirect {
     MultipleChoices = 300,
     MovedPermanently = 301,
     Found = 302,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum HttpServerError {}
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum HttpClientError {
     BadRequest = 400,
     Unauthorized = 401,
     Forbidden = 403,
-    NotFound,
+    NotFound = 404,
 }
 
+#[derive(Debug, Clone)]
 pub enum HttpError {
     HttpServerError(HttpServerError),
     HttpClientError(HttpClientError),

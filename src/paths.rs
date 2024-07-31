@@ -19,13 +19,13 @@ pub type HttpFunction = Arc<
         + Send
         + Sync,
 >;
-pub type HttpFunctionReturnType = Result<(HttpResponseHeader, Vec<u8>), HttpError>;
+pub type HttpFunctionReturnType = Result<(HttpResponseHeader, Vec<u8>), HttpResponseHeader>;
 
 #[derive(Clone)]
 pub struct HttpPath {
-    path: &'static str,
-    function: HttpFunction,
-    req_type: HttpMethod,
+    pub path: &'static str,
+    pub function: HttpFunction,
+    pub req_type: HttpMethod,
 }
 
 pub trait HttpPathMethods {

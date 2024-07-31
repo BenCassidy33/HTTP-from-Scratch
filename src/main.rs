@@ -5,19 +5,21 @@ pub mod headers;
 pub mod paths;
 pub mod routes;
 
-use codes::HttpClientError;
-use content::{AcceptEncoding, ContentTypes};
-use core::panic;
-use headers::{HttpRequestHeader, HttpResponseHeader, HttpVersion};
+use codes::{HttpClientError, HttpStatus};
+use content::{format_http_header, format_http_response, ContentType};
+use headers::{HttpMethod, HttpRequestHeader, HttpResponseHeader, HttpVersion};
 use paths::{into_http, HttpPath, HttpPathMethods};
-use std::{collections::HashMap, str};
+use std::str;
 use tokio::{
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream},
 };
 
 static HTTP_CONNECTION_FAILED: HttpResponseHeader = HttpResponseHeader {
-    status: codes::HttpStatus::Calamitous(HttpClientError::BadRequest),
+    content_type: ContentType::Plain,
+    content_length: 0,
+    http_method: HttpMethod::GET,
+    status: HttpStatus::Calamitous(HttpClientError::NotFound),
     http_version: HttpVersion::HTTP11,
 };
 
@@ -27,7 +29,7 @@ async fn main() -> std::io::Result<()> {
 
     let paths = <std::vec::Vec<paths::HttpPath> as HttpPathMethods>::new()
         .get("/", into_http(routes::index))
-        .post("/post", into_http(routes::post));
+        .get("/user", into_http(routes::user));
 
     loop {
         let (socket, _) = listener.accept().await?;
@@ -39,7 +41,7 @@ async fn process(mut socket: TcpStream, functions: Vec<HttpPath>) {
     eprintln!("Connection Made");
 
     let mut buffer: Vec<u8> = vec![0; 30 * 1024 * 1024];
-    loop {
+    'outer: loop {
         let n = socket
             .read(&mut buffer)
             .await
@@ -55,5 +57,25 @@ async fn process(mut socket: TcpStream, functions: Vec<HttpPath>) {
         }
 
         let header = header_parsing::parse_request_header(res, &mut socket).await;
+
+        for func in functions.clone().into_iter() {
+            if func.path == header.path && func.req_type == header.method {
+                let response = (func.function)(header.clone()).await;
+                match response {
+                    Ok((header, body)) => {
+                        let response = format_http_response(header, body);
+                        let _ = socket.write(response.as_bytes()).await;
+                        break 'outer;
+                    }
+
+                    Err(http_error_response) => {
+                        let _ = socket
+                            .write(format_http_header(http_error_response).as_bytes())
+                            .await;
+                        break 'outer;
+                    }
+                }
+            }
+        }
     }
 }
