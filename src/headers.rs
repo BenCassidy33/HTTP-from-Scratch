@@ -1,7 +1,6 @@
 use super::*;
-use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+#[derive(Debug, Clone, Default)]
 pub enum HttpMethod {
     #[default]
     GET,
@@ -14,41 +13,41 @@ pub enum HttpMethod {
     TRACE,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Clone, Default)]
 pub enum HttpVersion {
-    #[serde(rename = "HTTP/1.1")]
     #[default]
     HTTP11,
-    #[serde(rename = "HTTP/2")]
     HTTP2,
     //#[serde(rename = "HTTP/3")]
     //HTTP3,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct HttpResponseHeader {
-    #[serde(flatten)]
     pub status: codes::HttpStatus,
-    #[serde(rename = "version")]
     pub http_version: headers::HttpVersion,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Debug, Default)]
 pub struct HttpRequestHeader {
     pub authority: String,
     pub method: headers::HttpMethod,
+    pub host: String,
     pub path: String,
     pub scheme: String,
     pub accept: Vec<content::ContentTypes>,
     pub accept_encoding: Vec<content::AcceptEncoding>,
-    #[serde(flatten)]
     pub http_version: headers::HttpVersion,
-    #[serde(rename = "Request Headers")]
     pub request_headers: String, // TODO
-    #[serde(rename = "Request Body")]
     pub request_body: String,
-    #[serde(rename = "user-agent")]
     pub user_agent: String,
     pub body: String,
     pub priority: String,
+    pub accept_language: String,
+    pub sec_fetch_site: String,
+    pub upgrade_insecure_requests: String,
+    pub sec_fetch_user: String,
+    pub sec_fetch_dest: String,
+    pub sec_fetch_mode: String,
+    pub connection: String,
 }
