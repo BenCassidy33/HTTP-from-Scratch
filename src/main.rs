@@ -56,11 +56,15 @@ async fn process(mut socket: TcpStream, functions: Vec<HttpPath>) {
                 .await;
         }
 
-        let header = header_parsing::parse_request_header(res, &mut socket).await;
+        let header: std::collections::HashMap<String, String> =
+            header_parsing::parse_request_header(res).await;
 
         for func in functions.clone().into_iter() {
-            if func.path == header.path && func.req_type == header.method {
-                let response = (func.function)(header.clone()).await;
+            if func.path == header["path"]
+                && func.req_type == HttpMethod::from_str(header["method"].clone())
+            {
+                let req_header = HttpRequestHeader::from_map(header);
+                let response = (func.function)(req_header.clone()).await;
                 match response {
                     Ok((header, body)) => {
                         let response = format_http_response(header, body);

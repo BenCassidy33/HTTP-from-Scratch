@@ -1,5 +1,5 @@
 use super::*;
-use std::any::Any;
+use std::{any::Any, collections::HashMap};
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum HttpMethod {
@@ -12,6 +12,22 @@ pub enum HttpMethod {
     CONNECT,
     OPTIONS,
     TRACE,
+}
+
+impl HttpMethod {
+    pub fn from_str(string: String) -> Self {
+        return match string.as_str() {
+            "get" => Self::GET,
+            "head" => Self::HEAD,
+            "post" => Self::POST,
+            "put" => Self::PUT,
+            "delete" => Self::DELETE,
+            "connect" => Self::CONNECT,
+            "options" => Self::OPTIONS,
+            "trace" => Self::TRACE,
+            _ => panic!("bad request"),
+        };
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -59,4 +75,10 @@ pub struct HttpRequestHeader {
     pub sec_fetch_dest: String,
     pub sec_fetch_mode: String,
     pub connection: String,
+}
+
+impl HttpRequestHeader {
+    pub fn from_map(map: HashMap<String, String>) -> Self {
+        todo!()
+    }
 }
