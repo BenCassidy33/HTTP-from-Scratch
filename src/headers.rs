@@ -79,6 +79,8 @@ pub struct HttpRequestHeader {
 
 impl HttpRequestHeader {
     pub fn from_map(map: HashMap<String, String>) -> Self {
-        todo!()
+        let mut res = Self::default();
+        res.path = map["path"].clone();
+        res
     }
 }

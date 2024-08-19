@@ -20,12 +20,13 @@ pub async fn parse_request_header(header: &str) -> HashMap<String, String> {
             request.insert("version".to_string(), rest[1].to_string());
         }
 
-        println!("{line:?}");
-
         if line.len() < 2 {
-            request.insert(line[0].to_string(), line[1].to_string());
+            continue;
         }
+
+        request.insert(line[0].to_string(), line[1].to_string());
     }
 
+    println!("{request:#?}");
     request
 }

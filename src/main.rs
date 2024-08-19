@@ -60,10 +60,10 @@ async fn process(mut socket: TcpStream, functions: Vec<HttpPath>) {
             header_parsing::parse_request_header(res).await;
 
         for func in functions.clone().into_iter() {
-            if func.path == header["path"]
-                && func.req_type == HttpMethod::from_str(header["method"].clone())
+            if *func.path == header["path"]
+                && func.req_type == HttpMethod::from_str(header["method"].clone().to_lowercase())
             {
-                let req_header = HttpRequestHeader::from_map(header);
+                let req_header: HttpRequestHeader = HttpRequestHeader::from_map(header);
                 let response = (func.function)(req_header.clone()).await;
                 match response {
                     Ok((header, body)) => {
